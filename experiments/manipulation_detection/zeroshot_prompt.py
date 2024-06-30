@@ -7,7 +7,6 @@ import argparse
 
 from load_data import LoadManipDataset
 from model_chatgpt import ChatGPTModel
-from model_llama import LlamaModel
 from utils import *
 
 
@@ -61,7 +60,7 @@ if __name__ == '__main__':
     parser.add_argument('--top_p', default=0.5, type=float)
     parser.add_argument('--penal', default=0.0, type=float)
     parser.add_argument('--log_dir', default='./logs', type=str)
-    parser.add_argument('--data', default='../datasets/mentalmanip_maj.csv', type=str)
+    parser.add_argument('--data', default='../datasets/mentalmanip_con.csv', type=str)
     args = parser.parse_args()
 
     if os.path.exists(args.log_dir) is False:
@@ -79,27 +78,10 @@ if __name__ == '__main__':
     test_data = manip_dataset.df_test
 
     if args.model == 'chatgpt':
-        modelChatgpt = ChatGPTModel(gpt_model="gpt-4-1106-preview",
+        modelChatgpt = ChatGPTModel(gpt_model="gpt-3.5-turbo-0125",
                                     api_key="",  # Please provide your OpenAI API key
                                     temperature=0.1,
                                     top_p=0.5,
                                     penal=0.0,
                                     max_input_token_length=4096)
         prediction(modelChatgpt, test_data)
-
-    elif 'llama' in args.model:
-        llama_model = "Llama-2-7b-chat-hf"
-        if '13b' in args.model:
-            llama_model = "Llama-2-13b-chat-hf"
-
-        modelLlama = LlamaModel(load_from_local=False,
-                                model=llama_model,
-                                temperature=0.6,
-                                top_p=0.9,
-                                top_k=50,
-                                repetition_penalty=1.2,
-                                max_new_tokens=1024,
-                                max_input_token_length=4096,
-                                ft_output_dir='llama_ft')
-
-        prediction(modelLlama, test_data)
