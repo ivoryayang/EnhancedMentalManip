@@ -111,3 +111,39 @@ class ChatGPTModel:
         else:
             logging.info('Error: response of ChatGPT is neither yes nor no.')
             return -1
+    def zeroshotCoT_prompting(self, dialogue):
+        system_prompt = """I will provide you with a dialogue. Please determine if it contains elements of mental manipulation. Let's think step by step. Just answer with 'Yes' or 'No', and don't add anything else.\n"""
+        response = self.client.chat.completions.create(
+            model=self.gpt_model,
+            temperature=self.temperature,
+            top_p=self.top_p,
+            frequency_penalty=self.penal,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": dialogue,
+                }
+            ]
+        )
+
+        res = response.choices[0].message.content
+
+        logging.info(system_prompt)
+        logging.info(dialogue)
+        logging.info('')
+        logging.info(res)
+        logging.info('')
+
+        if 'yes' in res.lower():
+            return 1
+        elif 'no' in res.lower():
+            return 0
+        else:
+            logging.info('Error: response of ChatGPT is neither yes nor no.')
+            return -1
+
+# To do: Write CoT function
